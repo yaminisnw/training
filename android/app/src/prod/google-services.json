@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "991400873252",
+    "project_id": "counter-prod-a64ad",
+    "storage_bucket": "counter-prod-a64ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991400873252:android:1886659812635ead0377b1",
+        "android_client_info": {
+          "package_name": "com.flavors_training_prod"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACBuiidlnyJaTBPWh1ViNI3CnUaMXgW7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

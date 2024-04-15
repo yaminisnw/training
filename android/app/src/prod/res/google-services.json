@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "490528032515",
+    "project_id": "counter-dev-c0edd",
+    "storage_bucket": "counter-dev-c0edd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:490528032515:android:f33d71d10b839c8e444b36",
+        "android_client_info": {
+          "package_name": "com.example.flavours_example_dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXVnhPpLyNm63xVd6kVuyO27TlCn0kHcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

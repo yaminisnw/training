@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_core: ^2.29.0
+  firebase_auth: ^4.19.1
+  cloud_firestore: ^4.16.1
+  shared_preferences: ^2.0.6
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -39,6 +43,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_flavorizr: ^2.2.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -51,6 +57,33 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flavorizr:
+  app:
+    android:
+      flavorDimensions: "app"
+  flavors:
+    dev:
+      app:
+        name: "Counter App Dev"
+      android:
+        applicationId: "com.flavors_training_dev"
+        firebase:
+          config: "/Users/yamini/yamini/Practise/Training/secrets/dev/google-services.json"
+      ios:
+        bundleId: "com.flavorsDevTraining"
+        firebase:
+          config: "/Users/yamini/yamini/Practise/Training/secrets/dev/GoogleService-Info.plist"
+    prod:
+      app:
+        name: "Counter App Prod"
+      android:
+        applicationId: "com.flavors_training_prod"
+        firebase:
+          config: "/Users/yamini/yamini/Practise/Training/secrets/prod/google-services.json"
+      ios:
+        bundleId: "com.flavorsProdTraining"
+        firebase:
+          config: "/Users/yamini/yamini/Practise/Training/secrets/prod/GoogleService-Info.plist"
 flutter:
 
   # The following line ensures that the Material Icons font is

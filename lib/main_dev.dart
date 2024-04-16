@@ -8,6 +8,7 @@ import 'main.dart' as runner;
 Future<void> main() async {
   F.appFlavor = Flavor.dev;
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: DefaultDevFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+      options: DefaultDevFirebaseOptions.currentPlatform);
   await runner.main();
 }

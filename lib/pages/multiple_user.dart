@@ -6,12 +6,12 @@ import 'package:flutter_training/pages/list_of_users.dart';
 
 import '../flavors.dart';
 
-class MyHomePage extends StatefulWidget {
+class MultipleUser extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MultipleUser> createState() => _MultipleUserState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MultipleUserState extends State<MultipleUser> {
   String _docid = '';
 
   @override
@@ -22,10 +22,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> userName() async {
     //_countDoc is the document name that is used for local reference [] is the field inside the document
-    final _countDoc = await FirebaseFirestore.instance
-        .collection('counters')
-        .where('uid', isEqualTo: uid)
-        .get();
+    final _countDoc =
+        await FirebaseFirestore.instance.collection('counters').get();
     if (_countDoc.docs.isNotEmpty) {
       var first = _countDoc.docs.first;
       _docid = first.id;
@@ -107,6 +105,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+          ),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => ListOfUsers(),
+              ),
+            );
+          },
+        ),
         title: Text(F.title),
         actions: [
           IconButton(
@@ -129,91 +140,71 @@ class _MyHomePageState extends State<MyHomePage> {
               'Hello ${F.title}',
             ),
           ),
-          if (_docid.isNotEmpty)
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('counters')
-                    .doc(_docid)
-                    .snapshots(),
-                builder: (c, i) {
-                  if (i.hasError) {
-                    return SizedBox();
-                  }
-                  if (!i.hasData) {
-                    return SizedBox();
-                  }
-                  final data = i.requireData;
-                  if (!data.exists) {
-                    return SizedBox();
-                  }
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'You have pushed the button : ${data['count']} times',
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              FloatingActionButton(
-                onPressed: () async {
-                  updateCounter();
-                  if (_counter == 10) {
-                    await _counterHistory();
-                    _counter = 0;
-                    setState(() {});
-                  } else {
-                    await _incrementCounter();
-                  }
-                },
-                heroTag: 'Increment',
-                tooltip: 'Increment',
-                child: const Icon(Icons.add),
-              ),
-              FloatingActionButton(
-                onPressed: () async {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => ListOfUsers(),
-                    ),
-                  );
-                },
-                heroTag: 'MultiUser',
-                child: Text('Multi-User'),
-              )
-            ],
+          StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('counters')
+                  .doc(_docid)
+                  .snapshots(),
+              builder: (c, i) {
+                if (i.hasError) {
+                  return SizedBox();
+                }
+                if (!i.hasData) {
+                  return SizedBox();
+                }
+                final data = i.requireData;
+                if (!data.exists) {
+                  return SizedBox();
+                }
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'You have pushed the button : ${data['count']} times',
+                      ),
+                    ],
+                  ),
+                );
+              }),
+          FloatingActionButton(
+            onPressed: () async {
+              updateCounter();
+              if (_counter == 10) {
+                await _counterHistory();
+                _counter = 0;
+                setState(() {});
+              } else {
+                await _incrementCounter();
+              }
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
           ),
-          if (_docid.isNotEmpty)
-            Expanded(
-                child: StreamBuilder(
-              stream: _updateHistory(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return SizedBox();
-                }
-                if (snapshot.hasError) {
-                  return SizedBox();
-                }
-                return ListView.builder(
-                    itemCount: snapshot.data?.size,
-                    itemBuilder: (context, index) {
-                      final item = snapshot.data?.docs[index];
+          Expanded(
+              child: StreamBuilder(
+            stream: _updateHistory(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return SizedBox();
+              }
+              if (snapshot.hasError) {
+                return SizedBox();
+              }
+              return ListView.builder(
+                  itemCount: snapshot.data?.size,
+                  itemBuilder: (context, index) {
+                    final item = snapshot.data?.docs[index];
 
-                      return ListTile(
-                        title: Text(''),
-                        isThreeLine: true,
-                        subtitle: Text(
-                            'Created time: ${item?['createdAt']}\nUpdated time ${item!['updatedAt']}'),
-                      );
-                    });
-              },
-            ))
+                    return ListTile(
+                      title: Text(''),
+                      isThreeLine: true,
+                      subtitle: Text(
+                          'Created time: ${item?['createdAt']}\nUpdated time ${item!['updatedAt']}'),
+                    );
+                  });
+            },
+          ))
         ],
       ),
     );

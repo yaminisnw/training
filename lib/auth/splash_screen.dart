@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_training/auth/login_page.dart';
-import 'package:flutter_training/pages/my_home_page.dart';
+import 'package:flutter_training/pages/list_of_counters.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute<void>(
-            builder: (BuildContext context) => MyHomePage(),
+            builder: (BuildContext context) => ListOfCounters(),
           ),
         );
       } else {

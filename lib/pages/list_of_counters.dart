@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ListOfUsers extends StatefulWidget {
-  const ListOfUsers({super.key});
+import 'my_home_page.dart';
+
+class ListOfCounters extends StatefulWidget {
+  const ListOfCounters({super.key});
 
   @override
-  State<ListOfUsers> createState() => ListOfUsersState();
+  State<ListOfCounters> createState() => ListOfCountersState();
 
   Future<void> sharedData(List<String> uid) async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,7 +20,7 @@ class ListOfUsers extends StatefulWidget {
   }
 }
 
-class ListOfUsersState extends State<ListOfUsers> {
+class ListOfCountersState extends State<ListOfCounters> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -31,7 +33,11 @@ class ListOfUsersState extends State<ListOfUsers> {
       body: Center(
           child: StreamBuilder(
         stream:
-            FirebaseFirestore.instance.collection('Counter Users').snapshots(),
+            //FirebaseFirestore.instance.collection('Counter Users').snapshots(),
+            FirebaseFirestore.instance
+                .collection('counters')
+                .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+                .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return SizedBox();
@@ -45,19 +51,32 @@ class ListOfUsersState extends State<ListOfUsers> {
                 final item = snapshot.data?.docs[index];
 
                 return ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) =>
+                            MyHomePage(docid: item?.id ?? ''),
+                      ),
+                    );
+                  },
                   title: Text('uid:${item?['uid']}'),
                   isThreeLine: true,
-                  subtitle: Text(
-                      'Created time: ${item?['createdAt']}\nUpdated time ${item!['updatedAt']}'),
+                  subtitle: Text('counterid:${item?.id}'),
                 );
               });
         },
       )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _incrementCounter();
+        onPressed: () async {
+          await FirebaseFirestore.instance.collection('counters').doc().set({
+            'count': 0,
+            'uid': FirebaseAuth.instance.currentUser?.uid,
+            'createdAt': DateTime.now(),
+            'updatedAt': DateTime.now(),
+          });
         },
-        tooltip: 'Increment',
+        tooltip: 'Add Counters',
         child: Icon(Icons.add),
       ),
     );

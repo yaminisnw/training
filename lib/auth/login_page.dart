@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_training/auth/sign_up_page.dart';
-import 'package:flutter_training/pages/my_home_page.dart';
+import 'package:flutter_training/pages/list_of_counters.dart';
 
 class CounterLoginPage extends StatefulWidget {
   const CounterLoginPage({super.key});
@@ -73,7 +73,8 @@ class _CounterLoginPageState extends State<CounterLoginPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (BuildContext context) => MyHomePage(),
+                              builder: (BuildContext context) =>
+                                  ListOfCounters(),
                             ),
                           );
                         } on FirebaseAuthException catch (e) {

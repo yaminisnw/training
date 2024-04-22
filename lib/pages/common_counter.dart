@@ -2,40 +2,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_training/auth/login_page.dart';
-import 'package:flutter_training/pages/common_counter.dart';
-import 'package:flutter_training/pages/single_user_multiple_counter.dart';
+import 'package:flutter_training/pages/my_home_page.dart';
 
 import '../flavors.dart';
-import 'list_of_counters.dart';
 
-class MyHomePage extends StatefulWidget {
-  final String docid;
+class CommonCounter extends StatefulWidget {
+  const CommonCounter({super.key});
 
-  const MyHomePage({super.key, required this.docid});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CommonCounter> createState() => _CommonCounterState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CommonCounterState extends State<CommonCounter> {
+  String _docid = 'common_counter';
   @override
   void initState() {
     super.initState();
     userName();
-    //no need
   }
 
   Future<void> userName() async {
     //_countDoc is the document name that is used for local reference [] is the field inside the document
     final _countDoc = await FirebaseFirestore.instance
         .collection('counters')
-        .where('uid', isEqualTo: uid)
+        .doc(_docid)
         .get();
-    if (_countDoc.docs.isNotEmpty) {
-      var first = _countDoc.docs.first;
-      _updatedTime = first['updatedAt'].toDate();
-      _counter = first['count'];
-      setState(() {});
-    }
+    _updatedTime = _countDoc['updatedAt'].toDate();
+    _counter = _countDoc['count'];
+    setState(() {});
   }
 
   Future<void> updateCounter() async {
@@ -44,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final currentTime = DateTime.now();
     final previousUpdatedTime = currentTime.difference(_updatedTime).inMinutes;
     if (previousUpdatedTime >= 3) {
-      countersCollection.doc(widget.docid).set({
+      countersCollection.doc(_docid).set({
         'count': _counter,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
@@ -68,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //Update Firebase Storage
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final DocumentReference _counterRef =
-        _firestore.collection('counters').doc(widget.docid);
+        _firestore.collection('counters').doc(_docid);
     await _counterRef.set(
       {
         'count': _counter,
@@ -82,34 +76,36 @@ class _MyHomePageState extends State<MyHomePage> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final DocumentReference _counterRef = _firestore
         .collection('counters')
-        .doc(widget.docid)
+        .doc(_docid)
         .collection('history')
         .doc();
     await _counterRef.set(
       {
+        'uid': uid,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp()
       },
     );
   }
 
-  // Future<void> _loadCounter() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     _counter = prefs.getInt('counter') ?? 0;
-  //   });
-  // }
-  //
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadCounter();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => MyHomePage(
+                  docid: 'common_counter',
+                ),
+              ),
+            );
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
         title: Text(F.title),
         actions: [
           IconButton(
@@ -132,11 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
               'Hello ${F.title}',
             ),
           ),
-          if (widget.docid.isNotEmpty)
+          if (_docid.isNotEmpty)
             StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('counters')
-                    .doc(widget.docid)
+                    .doc(_docid)
                     .snapshots(),
                 builder: (c, i) {
                   if (i.hasError) {
@@ -178,45 +174,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 tooltip: 'Increment',
                 child: const Icon(Icons.add),
               ),
-              FloatingActionButton(
-                onPressed: () async {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (BuildContext context) => CommonCounter(),
-                    ),
-                  );
-                },
-                heroTag: 'MultiUser',
-                child: Text('Multi-User'),
-              )
             ],
           ),
-          Row(
-            children: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => MultipleCounters(),
-                      ),
-                    );
-                  },
-                  child: Text('MultipleCounters')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => ListOfCounters(),
-                      ),
-                    );
-                  },
-                  child: Text('MultipleCountersList'))
-            ],
-          ),
-          if (widget.docid.isNotEmpty)
+          if (_docid.isNotEmpty)
             Expanded(
                 child: StreamBuilder(
               stream: _updateHistory(),
@@ -249,7 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Stream<QuerySnapshot<Map<String, dynamic>>> _updateHistory() {
     return FirebaseFirestore.instance
         .collection('counters')
-        .doc(widget.docid)
+        .doc(_docid)
         .collection('history')
         .orderBy('updatedAt', descending: true)
         .snapshots();
